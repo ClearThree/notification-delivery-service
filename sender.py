@@ -115,7 +115,7 @@ class SenderThread(threading.Thread):
                 logger.info('Sent %s', item)
             else:
                 # Send failed, schedule retry
-                delay = 0.75 + 0.5 * random.random()
+                delay = 0.75 + 0.5 * random.random() + (item.attempt + 1) * 0.4
                 item = item.make_next_attempt(delay)
                 self.queue.put(item)
                 logging.info('Postponed message %s', item)
@@ -126,6 +126,7 @@ class SenderThread(threading.Thread):
         # /dev/null is a proper place for spam
         if not self.rate_limiter.is_allowed():
             self.rate_limited.inc()
+            time.sleep(0.5 * random.random())
             return False
         lag = time.monotonic() - item.queued_at
         logger.debug('Sending %s with lag %gs', item, lag)
