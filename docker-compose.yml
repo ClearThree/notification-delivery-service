@@ -3,6 +3,8 @@ services:
     container_name: app
     build: .
     stop_signal: SIGINT
+    ports:
+      - "4567:4567"  # forward ports to send requests to the app from outside of docker-compose network
   prometheus-server:
     container_name: prometheus-server
     volumes:
